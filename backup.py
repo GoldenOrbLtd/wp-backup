@@ -101,7 +101,8 @@ def do_work(args):
         simple_run(tar_args)
 
         # Finally, create the master backup file
-        master_backup_file = os.path.expanduser(os.path.join(args.output_dir, "wp_{}.tar.gz".format(datetime.datetime.now().strftime('%y%m%d%H%M%S'))))
+        timestamp = datetime.datetime.now().strftime('%y%m%d%H%M%S')
+        master_backup_file = os.path.expanduser(os.path.join(args.output_dir, "{}_{}.tar.gz".format(args.site_name, timestamp)))
 
         cmd_line = ['tar', 'cvfz', master_backup_file, '-C', temp_dir, args.mysql_archive, args.wordpress_archive]
         logger.info('Combining archives into single file {}'.format(master_backup_file))
@@ -114,6 +115,7 @@ def do_work(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = "Back up WordPress directory and MySQL database into a single tar archive")
+    parser.add_argument('site_name', default='wordpress')
     parser.add_argument('-o', '--output_dir', required=False, default='~/backup', help="Directory into which backup archive should be placed")
     parser.add_argument('-l', '--log_level', required=False, default='INFO', help="Logging level (useful for debugging)")
     parser.add_argument('-m', '--mysql_archive', required=False, default='mysqldmp.sql', help="Name of mysql component file within backup")
