@@ -42,7 +42,7 @@ def get_tables_with_prefix(schema, prefix, settings_file='my.cnf'):
     logger.debug('SQL to obtain table list: ' + table_sql)
     get_tables_args = ['mysql', '--defaults-extra-file=' + settings_file, '-B', '-N', '-e', table_sql]
     output = simple_run(get_tables_args)
-    return output.split('\n')
+    return [tbl for tbl in output.split('\n') if len(tbl) >= 1]
 
 
 def parse_wordpress_config(wordpress_dir, 
