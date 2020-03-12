@@ -5,6 +5,7 @@ import argparse
 import subprocess
 import os
 import re
+import sys
 from string import Template
 import tempfile
 import datetime
@@ -12,7 +13,7 @@ import shutil
 import logging
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 logger = logging.getLogger()
 
 
@@ -97,14 +98,14 @@ def do_work(args):
 
         # Next, tar up the wordpress directory itself
         logger.info("Backing up wordpress directory as {}".format(args.wordpress_archive))
-        tar_args = ['tar', 'cvfz', os.path.join(temp_dir, args.wordpress_archive), '-C', args.wordpress_dir, '.']
+        tar_args = ['tar', 'cfz', os.path.join(temp_dir, args.wordpress_archive), '-C', args.wordpress_dir, '.']
         simple_run(tar_args)
 
         # Finally, create the master backup file
         timestamp = datetime.datetime.now().strftime('%y%m%d%H%M%S')
         master_backup_file = os.path.expanduser(os.path.join(args.output_dir, "{}_{}.tar.gz".format(args.site_name, timestamp)))
 
-        cmd_line = ['tar', 'cvfz', master_backup_file, '-C', temp_dir, args.mysql_archive, args.wordpress_archive]
+        cmd_line = ['tar', 'cfz', master_backup_file, '-C', temp_dir, args.mysql_archive, args.wordpress_archive]
         logger.info('Combining archives into single file {}'.format(master_backup_file))
         simple_run(cmd_line)
     finally:
