@@ -5,9 +5,16 @@ set -e
 # Pick up settings for multi-site backup
 source ~/.wp-backup
 
+KEEP_BACKUPS=${NUM_TO_KEEP:-8}
+
 for site in $SITES; do
     echo "Processing site $site"
-    export BACKUP_DIR=~/backup/$HOST_ID/$site/backup-$(date "+%Y%m%d%H%M%S")
+    BACKUP_PARENT=~/backup/$HOST_ID/$site
+    if [ -d "$BACKUP_PARENT" ]; then
+        echo "Purge old local backup copies - keep last ${KEEP_BACKUPS}"
+        ( cd $BACKUP_PARENT & ls -t1 | tail -n +$KEEP_BACKUPS | xargs rm -fr )
+    fi
+    export BACKUP_DIR=$BACKUP_PARENT/backup-$(date "+%Y%m%d%H%M%S")
     mkdir -p $BACKUP_DIR
     sudo $SCRIPT_DIR/backup.py $site /var/www/$site/public_html -o $BACKUP_DIR
     sudo chown -R $USER $BACKUP_DIR
