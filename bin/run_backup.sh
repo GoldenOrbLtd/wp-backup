@@ -12,7 +12,7 @@ for site in $SITES; do
     BACKUP_PARENT=~/backup/$HOST_ID/$site
     if [ -d "$BACKUP_PARENT" ]; then
         echo "Purge old local backup copies - keep last ${KEEP_BACKUPS}"
-        ( cd $BACKUP_PARENT & ls -t1 | tail -n +$KEEP_BACKUPS | xargs rm -fr )
+        ( cd $BACKUP_PARENT && ls -t1 | tail -n +$KEEP_BACKUPS | xargs rm -fr )
     fi
     export BACKUP_DIR=$BACKUP_PARENT/backup-$(date "+%Y%m%d%H%M%S")
     mkdir -p $BACKUP_DIR
